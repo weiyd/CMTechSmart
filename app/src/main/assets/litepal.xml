@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value = "SmartDeviceDB"> </dbname>
+    <version value = "4"> </version>
+
+    <list>
+        <mapping class="com.cmtech.android.mall.ProductInfo"> </mapping>
+        <mapping class="com.cmtech.android.news.NewsInfo"> </mapping>
+
+    </list>
+</litepal>

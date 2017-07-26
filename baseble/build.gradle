@@ -30,4 +30,3 @@ dependencies {
     compile 'com.vise.xiaoyaoyou:viselog:1.1.2'
 }
 
-apply from: '../bintray.gradle'

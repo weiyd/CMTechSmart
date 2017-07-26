@@ -61,11 +61,9 @@ import static com.vise.baseble.common.BleConstant.MSG_WRITE_DES;
  * @author: <a href="http://www.xiaoyaoyou1212.com">DAWI</a>
  * @date: 16/8/5 20:42.
  */
-public class ViseBluetooth {
+public class CMBluetoothGatt {
 
     private Context context;//上下文
-    private BluetoothManager bluetoothManager;//蓝牙管理
-    private BluetoothAdapter bluetoothAdapter;//蓝牙适配器
     private BluetoothGatt bluetoothGatt;//蓝牙GATT
     private BluetoothGattService service;//GATT服务
     private BluetoothGattCharacteristic characteristic;//GATT特征值
@@ -75,27 +73,26 @@ public class ViseBluetooth {
     private IBleCallback tempBleCallback;//存储操作回调，方便取消管理
     private volatile Set<IBleCallback> bleCallbacks = new LinkedHashSet<>();//操作回调集合
     private State state = State.DISCONNECT;//设备状态描述
-    private int scanTimeout = DEFAULT_SCAN_TIME;//扫描超时时间
     private int connectTimeout = DEFAULT_CONN_TIME;//连接超时时间
     private int operateTimeout = DEFAULT_OPERATE_TIME;//数据操作超时时间
     private boolean isFound = false;//是否发现设备
 
-    private static ViseBluetooth viseBluetooth;//入口操作管理
+    private static CMBluetoothGatt CMBluetoothGatt;//入口操作管理
 
     /**
      * 单例方式获取蓝牙通信入口
      *
      * @return 返回ViseBluetooth
      */
-    public static ViseBluetooth getInstance() {
-        if (viseBluetooth == null) {
-            synchronized (ViseBluetooth.class) {
-                if (viseBluetooth == null) {
-                    viseBluetooth = new ViseBluetooth();
+    public static CMBluetoothGatt getInstance() {
+        if (CMBluetoothGatt == null) {
+            synchronized (CMBluetoothGatt.class) {
+                if (CMBluetoothGatt == null) {
+                    CMBluetoothGatt = new CMBluetoothGatt();
                 }
             }
         }
-        return viseBluetooth;
+        return CMBluetoothGatt;
     }
 
     /**
@@ -377,143 +374,9 @@ public class ViseBluetooth {
         }
     };
 
-    private ViseBluetooth() {
+    private CMBluetoothGatt() {
     }
 
-    /**
-     * 初始化
-     * @param context 上下文
-     */
-    public void init(Context context) {
-        if (this.context == null) {
-            this.context = context.getApplicationContext();
-            bluetoothManager = (BluetoothManager) this.context.getSystemService(Context.BLUETOOTH_SERVICE);
-            bluetoothAdapter = bluetoothManager.getAdapter();
-        }
-    }
-
-    /*==================Android API 18 Scan========================*/
-
-    /**
-     * 开始扫描
-     * @param leScanCallback 回调
-     */
-    public void startLeScan(BluetoothAdapter.LeScanCallback leScanCallback) {
-        if (bluetoothAdapter != null) {
-            bluetoothAdapter.startLeScan(leScanCallback);
-            state = State.SCAN_PROCESS;
-        }
-    }
-
-    /**
-     * 停止扫描
-     * @param leScanCallback 回调
-     */
-    public void stopLeScan(BluetoothAdapter.LeScanCallback leScanCallback) {
-        if (bluetoothAdapter != null) {
-            bluetoothAdapter.stopLeScan(leScanCallback);
-        }
-    }
-
-    /**
-     * 开始扫描
-     * @param periodScanCallback 自定义回调
-     */
-    public void startScan(PeriodScanCallback periodScanCallback) {
-        if (periodScanCallback == null) {
-            throw new IllegalArgumentException("this PeriodScanCallback is Null!");
-        }
-        periodScanCallback.setViseBluetooth(this).setScan(true).setScanTimeout(scanTimeout).scan();
-    }
-
-    /**
-     * 停止扫描
-     * @param periodScanCallback 自定义回调
-     */
-    public void stopScan(PeriodScanCallback periodScanCallback) {
-        if (periodScanCallback == null) {
-            throw new IllegalArgumentException("this PeriodScanCallback is Null!");
-        }
-        periodScanCallback.setViseBluetooth(this).setScan(false).removeHandlerMsg().scan();
-    }
-
-    /*==================Android API 21 Scan========================*/
-
-    /**
-     * 开始扫描
-     * @param leScanCallback 回调
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void startLeScan(ScanCallback leScanCallback) {
-        if (bluetoothAdapter != null && bluetoothAdapter.getBluetoothLeScanner() != null) {
-            bluetoothAdapter.getBluetoothLeScanner().startScan(leScanCallback);
-            state = State.SCAN_PROCESS;
-        }
-    }
-
-    /**
-     * 开始扫描
-     * @param filters 过滤条件
-     * @param settings 设置
-     * @param leScanCallback 回调
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void startLeScan(List<ScanFilter> filters, ScanSettings settings, ScanCallback leScanCallback) {
-        if (bluetoothAdapter != null && bluetoothAdapter.getBluetoothLeScanner() != null) {
-            bluetoothAdapter.getBluetoothLeScanner().startScan(filters, settings, leScanCallback);
-            state = State.SCAN_PROCESS;
-        }
-    }
-
-    /**
-     * 停止扫描
-     * @param leScanCallback 回调
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void stopLeScan(ScanCallback leScanCallback) {
-        if (bluetoothAdapter != null && bluetoothAdapter.getBluetoothLeScanner() != null) {
-            bluetoothAdapter.getBluetoothLeScanner().stopScan(leScanCallback);
-        }
-    }
-
-    /**
-     * 开始扫描
-     * @param periodScanCallback 自定义回调
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void startScan(PeriodLScanCallback periodScanCallback) {
-        if (periodScanCallback == null) {
-            throw new IllegalArgumentException("this PeriodScanCallback is Null!");
-        }
-        periodScanCallback.setViseBluetooth(this).setScan(true).setScanTimeout(scanTimeout).scan();
-    }
-
-    /**
-     * 开始扫描
-     * @param filters 过滤条件
-     * @param settings 设置
-     * @param periodScanCallback 自定义回调
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void startScan(List<ScanFilter> filters, ScanSettings settings, PeriodLScanCallback periodScanCallback) {
-        if (periodScanCallback == null) {
-            throw new IllegalArgumentException("this PeriodScanCallback is Null!");
-        }
-        periodScanCallback.setViseBluetooth(this).setScan(true).setScanTimeout(scanTimeout).setFilters(filters).setSettings(settings)
-                .scan();
-    }
-
-    /**
-     * 停止扫描
-     * @param periodScanCallback 自定义回调
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void stopScan(PeriodLScanCallback periodScanCallback) {
-        if (periodScanCallback == null) {
-            throw new IllegalArgumentException("this PeriodScanCallback is Null!");
-        }
-        periodScanCallback.setViseBluetooth(this).setScan(false).removeHandlerMsg().scan();
-    }
 
     /*==================connect========================*/
 
@@ -561,7 +424,7 @@ public class ViseBluetooth {
             throw new IllegalArgumentException("Illegal Name!");
         }
         isFound = false;
-        startScan(new PeriodNameScanCallback(name) {
+        CMBluetoothScanner.getInstance().startScan(new PeriodNameScanCallback(name) {
             @Override
             public void onDeviceFound(final BluetoothLeDevice bluetoothLeDevice) {
                 isFound = true;
@@ -602,7 +465,7 @@ public class ViseBluetooth {
             throw new IllegalArgumentException("Illegal MAC!");
         }
         isFound = false;
-        startScan(new PeriodMacScanCallback(mac) {
+        CMBluetoothScanner.getInstance().startScan(new PeriodMacScanCallback(mac) {
             @Override
             public void onDeviceFound(final BluetoothLeDevice bluetoothLeDevice) {
                 isFound = true;
@@ -646,7 +509,7 @@ public class ViseBluetooth {
         isFound = false;
         List<ScanFilter> bleScanFilters = new ArrayList<>();
         bleScanFilters.add(new ScanFilter.Builder().setDeviceName(name).build());
-        startScan(bleScanFilters, new ScanSettings.Builder().build(), new PeriodLScanCallback() {
+        CMBluetoothScanner.getInstance().startScan(bleScanFilters, new ScanSettings.Builder().build(), new PeriodLScanCallback() {
             @Override
             public void onDeviceFound(final BluetoothLeDevice bluetoothLeDevice) {
                 isFound = true;
@@ -690,7 +553,7 @@ public class ViseBluetooth {
         isFound = false;
         List<ScanFilter> bleScanFilters = new ArrayList<>();
         bleScanFilters.add(new ScanFilter.Builder().setDeviceAddress(mac).build());
-        startScan(bleScanFilters, new ScanSettings.Builder().build(), new PeriodLScanCallback() {
+        CMBluetoothScanner.getInstance().startScan(bleScanFilters, new ScanSettings.Builder().build(), new PeriodLScanCallback() {
             @Override
             public void onDeviceFound(final BluetoothLeDevice bluetoothLeDevice) {
                 isFound = true;
@@ -729,7 +592,7 @@ public class ViseBluetooth {
      * @param descriptorUUID 属性描述UUID
      * @return 返回ViseBluetooth
      */
-    public ViseBluetooth withUUID(UUID serviceUUID, UUID characteristicUUID, UUID descriptorUUID) {
+    public CMBluetoothGatt withUUID(UUID serviceUUID, UUID characteristicUUID, UUID descriptorUUID) {
         if (serviceUUID != null && bluetoothGatt != null) {
             service = bluetoothGatt.getService(serviceUUID);
         }
@@ -749,7 +612,7 @@ public class ViseBluetooth {
      * @param descriptorUUID 属性描述UUID
      * @return 返回ViseBluetooth
      */
-    public ViseBluetooth withUUIDString(String serviceUUID, String characteristicUUID, String descriptorUUID) {
+    public CMBluetoothGatt withUUIDString(String serviceUUID, String characteristicUUID, String descriptorUUID) {
         return withUUID(formUUID(serviceUUID), formUUID(characteristicUUID), formUUID(descriptorUUID));
     }
 
@@ -1147,22 +1010,6 @@ public class ViseBluetooth {
     /*==================get and set========================*/
 
     /**
-     * 获取蓝牙管理
-     * @return 返回蓝牙管理
-     */
-    public BluetoothManager getBluetoothManager() {
-        return bluetoothManager;
-    }
-
-    /**
-     * 获取蓝牙适配器
-     * @return 返回蓝牙适配器
-     */
-    public BluetoothAdapter getBluetoothAdapter() {
-        return bluetoothAdapter;
-    }
-
-    /**
      * 获取蓝牙GATT
      * @return 返回蓝牙GATT
      */
@@ -1191,7 +1038,7 @@ public class ViseBluetooth {
      * @param service 服务
      * @return 返回ViseBluetooth
      */
-    public ViseBluetooth setService(BluetoothGattService service) {
+    public CMBluetoothGatt setService(BluetoothGattService service) {
         this.service = service;
         return this;
     }
@@ -1209,7 +1056,7 @@ public class ViseBluetooth {
      * @param characteristic 特征值
      * @return 返回ViseBluetooth
      */
-    public ViseBluetooth setCharacteristic(BluetoothGattCharacteristic characteristic) {
+    public CMBluetoothGatt setCharacteristic(BluetoothGattCharacteristic characteristic) {
         this.characteristic = characteristic;
         return this;
     }
@@ -1227,7 +1074,7 @@ public class ViseBluetooth {
      * @param descriptor 属性描述值
      * @return 返回ViseBluetooth
      */
-    public ViseBluetooth setDescriptor(BluetoothGattDescriptor descriptor) {
+    public CMBluetoothGatt setDescriptor(BluetoothGattDescriptor descriptor) {
         this.descriptor = descriptor;
         return this;
     }
@@ -1245,7 +1092,7 @@ public class ViseBluetooth {
      * @param operateTimeout 发送数据超时时间
      * @return 返回ViseBluetooth
      */
-    public ViseBluetooth setOperateTimeout(int operateTimeout) {
+    public CMBluetoothGatt setOperateTimeout(int operateTimeout) {
         this.operateTimeout = operateTimeout;
         return this;
     }
@@ -1263,28 +1110,12 @@ public class ViseBluetooth {
      * @param connectTimeout 连接超时时间
      * @return 返回ViseBluetooth
      */
-    public ViseBluetooth setConnectTimeout(int connectTimeout) {
+    public CMBluetoothGatt setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
         return this;
     }
 
-    /**
-     * 获取扫描超时时间
-     * @return 返回扫描超时时间
-     */
-    public int getScanTimeout() {
-        return scanTimeout;
-    }
 
-    /**
-     * 设置扫描超时时间
-     * @param scanTimeout 扫描超时时间
-     * @return 返回ViseBluetooth
-     */
-    public ViseBluetooth setScanTimeout(int scanTimeout) {
-        this.scanTimeout = scanTimeout;
-        return this;
-    }
 
     /**
      * 获取设备当前状态
@@ -1299,7 +1130,7 @@ public class ViseBluetooth {
      * @param state 设备状态
      * @return 返回ViseBluetooth
      */
-    public ViseBluetooth setState(State state) {
+    public CMBluetoothGatt setState(State state) {
         this.state = state;
         return this;
     }

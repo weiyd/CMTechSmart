@@ -6,6 +6,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +39,7 @@ public class MallFragment extends Fragment {
         productList = readProductInfoFromDatabase();
 
         RecyclerView productView = (RecyclerView) view.findViewById(R.id.rvproductview);
-        GridLayoutManager manager = new GridLayoutManager(getActivity(), 2);
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         productView.setLayoutManager(manager);
         adapter = new ProductInfoAdapter(productList);
         productView.setAdapter(adapter);

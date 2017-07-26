@@ -17,9 +17,11 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -34,6 +36,14 @@ import com.cmtech.android.device.DeviceActivity;
 import com.cmtech.android.device.SimpleScanDeviceAdapter;
 import com.cmtech.android.device.ScanDeviceInfo;
 import com.cmtech.android.fragmenttest.R;
+import com.cmtech.android.globalcommon.ActivityCollector;
+import com.vise.baseble.CMBluetoothScanner;
+import com.vise.baseble.callback.scan.PeriodScanCallback;
+import com.vise.baseble.model.BluetoothLeDevice;
+import com.vise.baseble.model.BluetoothLeDeviceStore;
+import com.vise.baseble.utils.BleUtil;
+import com.vise.log.ViseLog;
+import com.vise.log.inner.LogcatTree;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,8 +53,9 @@ import java.util.List;
  * Created by gdmc on 2017/7/10.
  */
 
-@TargetApi(21)
 public class DeviceFragment extends Fragment {
+    private Activity activity;
+
     private List<ScanDeviceInfo> deviceList = new ArrayList<>();
     private DetailScanDeviceAdapter adapter;
 
@@ -56,6 +67,34 @@ public class DeviceFragment extends Fragment {
     private ScanSettings settings;
     private List<ScanFilter> filters;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+
+    //设备扫描结果存储仓库
+    private BluetoothLeDeviceStore bluetoothLeDeviceStore;
+    //设备扫描结果集合
+    private volatile List<BluetoothLeDevice> bluetoothLeDeviceList = new ArrayList<>();
+    private PeriodScanCallback periodScanCallback = new PeriodScanCallback() {
+        @Override
+        public void scanTimeout() {
+            ViseLog.i("scan timeout");
+        }
+
+        @Override
+        public void onDeviceFound(BluetoothLeDevice bluetoothLeDevice) {
+            ViseLog.i("Founded Scan Device:" + bluetoothLeDevice);
+            if (bluetoothLeDeviceStore != null) {
+                bluetoothLeDeviceStore.addDevice(bluetoothLeDevice);
+                bluetoothLeDeviceList = bluetoothLeDeviceStore.getDeviceList();
+            }
+
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //adapter.setDeviceList(bluetoothLeDeviceList);
+
+                }
+            });
+        }
+    };
 
 
     @Nullable
@@ -78,38 +117,24 @@ public class DeviceFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        final Activity activity = getActivity();
+        activity = getActivity();
+
+        ViseLog.getLogConfig().configAllowLog(true);//配置日志信息
+        ViseLog.plant(new LogcatTree());//添加Logcat打印信息
+        //蓝牙信息初始化，全局唯一，必须在应用初始化时调用
+        CMBluetoothScanner.getInstance().init(activity);//.getApplicationContext());
+
         Button btnScan = (Button) activity.findViewById(R.id.btnscan);
         Button btnConnect = (Button) activity.findViewById(R.id.btnconnect);
 
-        mHandler = new Handler();
-        if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(activity, "BLE Not Supported", Toast.LENGTH_SHORT).show();
-            btnScan.setEnabled(false);
-        }
-        final BluetoothManager bluetoothManager =
-                (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
+        //mHandler = new Handler();
 
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
-            settings = new ScanSettings.Builder()
-                    .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                    .build();
-            filters = new ArrayList<ScanFilter>();
-        }
 
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 adapter.clearDeviceList();
-                scanLeDevice(true);
+                checkBluetoothPermission();
             }
         });
 
@@ -118,96 +143,95 @@ public class DeviceFragment extends Fragment {
             public void onClick(View v) {
                 List<ScanDeviceInfo> list = adapter.getNeedConnectDevice();
                 if(list.size() == 0) return;
-                scanLeDevice(false);
+                stopScan();
                 DeviceActivity.actionStart(activity, list);
             }
         });
 
-        scanLeDevice(true);
+        checkBluetoothPermission();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_COARSE_LOCATION:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // TODO request success
-                }
-                break;
-        }
-    }
-
-    private void scanLeDevice(final boolean enable) {
-        if (enable) {
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (Build.VERSION.SDK_INT < 21) {
-                        mBluetoothAdapter.stopLeScan(mLeScanCallback);
-                    } else {
-                        mLEScanner.stopScan(mScanCallback);
-
-                    }
-                }
-            }, SCAN_PERIOD);
-            if (Build.VERSION.SDK_INT < 21) {
-                mBluetoothAdapter.startLeScan(mLeScanCallback);
+    /**
+     * 检查蓝牙权限
+     */
+    private void checkBluetoothPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //校验是否已具有模糊定位权限
+            if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        PERMISSION_REQUEST_COARSE_LOCATION);
             } else {
-                mLEScanner.startScan(filters, settings, mScanCallback);
+                //具有权限
+                scanBluetooth();
             }
         } else {
-            if (Build.VERSION.SDK_INT < 21) {
-                mBluetoothAdapter.stopLeScan(mLeScanCallback);
+            //系统不高于6.0直接执行
+            scanBluetooth();
+        }
+    }
+
+    /**
+     * 对返回的值进行处理，相当于StartActivityForResult
+     */
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        doNext(requestCode, grantResults);
+    }
+
+    /**
+     * 权限申请的下一步处理
+     * @param requestCode 申请码
+     * @param grantResults 申请结果
+     */
+    private void doNext(int requestCode, int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_COARSE_LOCATION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //同意权限
+                scanBluetooth();
             } else {
-                mLEScanner.stopScan(mScanCallback);
+                // 权限拒绝，提示用户开启权限
+                denyPermission();
             }
         }
     }
 
-    private ScanCallback mScanCallback = new ScanCallback() {
-        @Override
-        public void onScanResult(int callbackType, ScanResult result) {
-            Log.i("callbackType", String.valueOf(callbackType));
-            Log.i("result", result.toString());
-            BluetoothDevice btDevice = result.getDevice();
-            String address = btDevice.getAddress();
-            int pos = adapter.searchDeviceUsingAddress(address);
+    /**
+     * 权限申请被拒绝的处理方式
+     */
+    private void denyPermission() {
+        ActivityCollector.finishAll();
+    }
 
-            if(pos == -1) {
-                ScanDeviceInfo info = new ScanDeviceInfo(btDevice.getName(), "uuid", btDevice.getAddress(), result.getRssi());
-                adapter.addOneDeviceInfo(info);
-            }
-            else
-            {
-                adapter.changeItemRssi(pos, result.getRssi());
-            }
+    private void scanBluetooth() {
+        if (BleUtil.isBleEnable(activity)) {
+            startScan();
+        } else {
+            BleUtil.enableBluetooth(activity, 1);
         }
+    }
 
-        @Override
-        public void onBatchScanResults(List<ScanResult> results) {
-            for (ScanResult sr : results) {
-                Log.i("ScanResult - Results", sr.toString());
-            }
+    /**
+     * 开始扫描
+     */
+    private void startScan() {
+        if (bluetoothLeDeviceStore != null) {
+            bluetoothLeDeviceStore.clear();
         }
-
-        @Override
-        public void onScanFailed(int errorCode) {
-            Log.e("Scan Failed", "Error Code: " + errorCode);
+        if (adapter != null && bluetoothLeDeviceList != null) {
+            bluetoothLeDeviceList.clear();
+            //adapter.setDeviceList(bluetoothLeDeviceList);
         }
-    };
+        CMBluetoothScanner.getInstance().setScanTimeout(-1).startScan(periodScanCallback);
+    }
 
-    private BluetoothAdapter.LeScanCallback mLeScanCallback =
-            new BluetoothAdapter.LeScanCallback() {
-                @Override
-                public void onLeScan(final BluetoothDevice device, int rssi,
-                                     byte[] scanRecord) {new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.i("onLeScan", device.toString());
-                            //connectToDevice(device);
-                        }
-                    };
-                }
-            };
+    /**
+     * 停止扫描
+     */
+    private void stopScan() {
+        CMBluetoothScanner.getInstance().stopScan(periodScanCallback);
+    }
+
+
+
 
 }

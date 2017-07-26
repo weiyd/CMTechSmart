@@ -29,9 +29,9 @@ public abstract class PeriodMacScanCallback extends PeriodScanCallback {
         if (!hasFound.get()) {
             if (device != null && device.getAddress() != null && mac.equalsIgnoreCase(device.getAddress().trim())) {
                 hasFound.set(true);
-                if (viseBluetooth != null) {
-                    viseBluetooth.stopLeScan(PeriodMacScanCallback.this);
-                    viseBluetooth.setState(State.SCAN_SUCCESS);
+                if (scanner != null) {
+                    scanner.stopLeScan(PeriodMacScanCallback.this);
+                    scanner.setState(State.SCAN_SUCCESS);
                 }
                 onDeviceFound(new BluetoothLeDevice(device, rssi, scanRecord, System.currentTimeMillis()));
             }

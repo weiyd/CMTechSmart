@@ -9,7 +9,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.vise.baseble.ViseBluetooth;
+import com.vise.baseble.CMBluetoothScanner;
 import com.vise.baseble.common.BleConstant;
 import com.vise.baseble.common.State;
 import com.vise.baseble.model.BluetoothLeDevice;
@@ -24,19 +24,19 @@ import java.util.List;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public abstract class PeriodLScanCallback extends ScanCallback {
     protected Handler handler = new Handler(Looper.getMainLooper());
-    protected ViseBluetooth viseBluetooth;
+    protected CMBluetoothScanner scanner;
     protected List<ScanFilter> filters;
     protected ScanSettings settings;
     protected int scanTimeout = BleConstant.TIME_FOREVER; //表示一直扫描
     protected boolean isScan = true;
     protected boolean isScanning = false;
 
-    public ViseBluetooth getViseBluetooth() {
-        return viseBluetooth;
+    public CMBluetoothScanner getScanner() {
+        return scanner;
     }
 
-    public PeriodLScanCallback setViseBluetooth(ViseBluetooth viseBluetooth) {
-        this.viseBluetooth = viseBluetooth;
+    public PeriodLScanCallback setScanner(CMBluetoothScanner scanner) {
+        this.scanner = scanner;
         return this;
     }
 
@@ -78,26 +78,26 @@ public abstract class PeriodLScanCallback extends ScanCallback {
                     @Override
                     public void run() {
                         isScanning = false;
-                        if (viseBluetooth != null) {
-                            viseBluetooth.setState(State.SCAN_TIMEOUT);
-                            viseBluetooth.stopLeScan(PeriodLScanCallback.this);
+                        if (scanner != null) {
+                            scanner.setState(State.SCAN_TIMEOUT);
+                            scanner.stopLeScan(PeriodLScanCallback.this);
                         }
                         scanTimeout();
                     }
                 }, scanTimeout);
             }
             isScanning = true;
-            if (viseBluetooth != null) {
+            if (scanner != null) {
                 if (filters != null) {
-                    viseBluetooth.startLeScan(filters, settings, PeriodLScanCallback.this);
+                    scanner.startLeScan(filters, settings, PeriodLScanCallback.this);
                 } else {
-                    viseBluetooth.startLeScan(PeriodLScanCallback.this);
+                    scanner.startLeScan(PeriodLScanCallback.this);
                 }
             }
         } else {
             isScanning = false;
-            if (viseBluetooth != null) {
-                viseBluetooth.stopLeScan(PeriodLScanCallback.this);
+            if (scanner != null) {
+                scanner.stopLeScan(PeriodLScanCallback.this);
             }
         }
     }

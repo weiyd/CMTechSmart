@@ -88,11 +88,18 @@ public class DetailScanDeviceAdapter extends RecyclerView.Adapter<DetailScanDevi
     }
 
     public void addOneDeviceInfo(ScanDeviceInfo info) {
-        listItem.add(info);
-        notifyDataSetChanged();
+        int pos = searchDeviceUsingAddress(info.getAddress());
+
+        if(pos == -1) {
+            listItem.add(info);
+            notifyDataSetChanged();
+        } else {
+            changeItemRssi(pos, info.getRssi());
+            notifyItemChanged(pos);
+        }
     }
 
-    public int searchDeviceUsingAddress(String address) {
+    private int searchDeviceUsingAddress(String address) {
         for(int i = 0; i < listItem.size(); i++)
         {
             if(listItem.get(i).getAddress().equals(address))
@@ -103,7 +110,6 @@ public class DetailScanDeviceAdapter extends RecyclerView.Adapter<DetailScanDevi
 
     public void changeItemRssi(int pos, int rssi) {
         listItem.get(pos).setRssi(rssi);
-        notifyItemChanged(pos);
     }
 
     public List<ScanDeviceInfo> getNeedConnectDevice() {

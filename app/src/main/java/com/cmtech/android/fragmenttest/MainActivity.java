@@ -80,6 +80,24 @@ public class MainActivity extends BasicActivity {
         //setTitle(FRAG_TITLE[curPos]);
     }
 
+    /**
+     * 打开或关闭蓝牙后的回调
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == DeviceFragment.REQUEST_BT_OPEN) {
+                deviceFragment.startScan();
+            }
+        } else if (resultCode == RESULT_CANCELED) {
+            ActivityCollector.finishAll();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     public void changeFragment(int position) {
         if(curPos == position) return;
 

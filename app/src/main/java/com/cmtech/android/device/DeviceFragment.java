@@ -49,6 +49,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Created by gdmc on 2017/7/10.
  */
@@ -59,19 +62,10 @@ public class DeviceFragment extends Fragment {
     private List<ScanDeviceInfo> deviceList = new ArrayList<>();
     private DetailScanDeviceAdapter adapter;
 
-    private BluetoothAdapter mBluetoothAdapter;
-    private int REQUEST_ENABLE_BT = 1;
-    private Handler mHandler;
-    private static final long SCAN_PERIOD = 10000;
-    private BluetoothLeScanner mLEScanner;
-    private ScanSettings settings;
-    private List<ScanFilter> filters;
+    private static final int SCAN_PERIOD = 10000;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+    public static final int REQUEST_BT_OPEN = 2;
 
-    //设备扫描结果存储仓库
-    private BluetoothLeDeviceStore bluetoothLeDeviceStore;
-    //设备扫描结果集合
-    private volatile List<BluetoothLeDevice> bluetoothLeDeviceList = new ArrayList<>();
     private PeriodScanCallback periodScanCallback = new PeriodScanCallback() {
         @Override
         public void scanTimeout() {
@@ -81,21 +75,13 @@ public class DeviceFragment extends Fragment {
         @Override
         public void onDeviceFound(BluetoothLeDevice bluetoothLeDevice) {
             ViseLog.i("Founded Scan Device:" + bluetoothLeDevice);
-            if (bluetoothLeDeviceStore != null) {
-                bluetoothLeDeviceStore.addDevice(bluetoothLeDevice);
-                bluetoothLeDeviceList = bluetoothLeDeviceStore.getDeviceList();
-            }
 
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //adapter.setDeviceList(bluetoothLeDeviceList);
+            ScanDeviceInfo deviceInfo = new ScanDeviceInfo(bluetoothLeDevice.getName(),
+                    "", bluetoothLeDevice.getAddress(), bluetoothLeDevice.getRssi());
 
-                }
-            });
+            adapter.addOneDeviceInfo(deviceInfo);
         }
     };
-
 
     @Nullable
     @Override
@@ -116,7 +102,6 @@ public class DeviceFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         activity = getActivity();
 
         ViseLog.getLogConfig().configAllowLog(true);//配置日志信息
@@ -126,9 +111,6 @@ public class DeviceFragment extends Fragment {
 
         Button btnScan = (Button) activity.findViewById(R.id.btnscan);
         Button btnConnect = (Button) activity.findViewById(R.id.btnconnect);
-
-        //mHandler = new Handler();
-
 
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,8 +129,18 @@ public class DeviceFragment extends Fragment {
                 DeviceActivity.actionStart(activity, list);
             }
         });
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         checkBluetoothPermission();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopScan();
     }
 
     /**
@@ -206,22 +198,15 @@ public class DeviceFragment extends Fragment {
         if (BleUtil.isBleEnable(activity)) {
             startScan();
         } else {
-            BleUtil.enableBluetooth(activity, 1);
+            BleUtil.enableBluetooth(activity, REQUEST_BT_OPEN);
         }
     }
 
     /**
      * 开始扫描
      */
-    private void startScan() {
-        if (bluetoothLeDeviceStore != null) {
-            bluetoothLeDeviceStore.clear();
-        }
-        if (adapter != null && bluetoothLeDeviceList != null) {
-            bluetoothLeDeviceList.clear();
-            //adapter.setDeviceList(bluetoothLeDeviceList);
-        }
-        CMBluetoothScanner.getInstance().setScanTimeout(-1).startScan(periodScanCallback);
+    public void startScan() {
+        CMBluetoothScanner.getInstance().setScanTimeout(SCAN_PERIOD).startScan(periodScanCallback);
     }
 
     /**
@@ -230,8 +215,5 @@ public class DeviceFragment extends Fragment {
     private void stopScan() {
         CMBluetoothScanner.getInstance().stopScan(periodScanCallback);
     }
-
-
-
 
 }

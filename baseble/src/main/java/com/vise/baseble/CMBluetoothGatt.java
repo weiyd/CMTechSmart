@@ -77,24 +77,6 @@ public class CMBluetoothGatt {
     private int operateTimeout = DEFAULT_OPERATE_TIME;//数据操作超时时间
     private boolean isFound = false;//是否发现设备
 
-    private static CMBluetoothGatt CMBluetoothGatt;//入口操作管理
-
-    /**
-     * 单例方式获取蓝牙通信入口
-     *
-     * @return 返回ViseBluetooth
-     */
-    public static CMBluetoothGatt getInstance() {
-        if (CMBluetoothGatt == null) {
-            synchronized (CMBluetoothGatt.class) {
-                if (CMBluetoothGatt == null) {
-                    CMBluetoothGatt = new CMBluetoothGatt();
-                }
-            }
-        }
-        return CMBluetoothGatt;
-    }
-
     /**
      * handler处理连接超时和操作异常超时
      */
@@ -374,7 +356,8 @@ public class CMBluetoothGatt {
         }
     };
 
-    private CMBluetoothGatt() {
+    public CMBluetoothGatt(Context context) {
+        this.context = context;
     }
 
 

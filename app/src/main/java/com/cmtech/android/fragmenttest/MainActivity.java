@@ -3,19 +3,16 @@ package com.cmtech.android.fragmenttest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import com.cmtech.android.device.DeviceFragment;
+import com.cmtech.android.device.DeviceScanFragment;
 import com.cmtech.android.globalcommon.ActivityCollector;
 import com.cmtech.android.globalcommon.BasicActivity;
-import com.cmtech.android.globalcommon.MyApplication;
 import com.cmtech.android.mall.MallFragment;
 import com.cmtech.android.news.NewsFragment;
 
@@ -40,10 +37,10 @@ public class MainActivity extends BasicActivity {
 
     private static NewsFragment newsFragment = new NewsFragment();
     private static MallFragment mallFragment = new MallFragment();
-    private static DeviceFragment deviceFragment = new DeviceFragment();
+    private static DeviceScanFragment deviceScanFragment = new DeviceScanFragment();
     private static SocialFragment socialFragment = new SocialFragment();
     private static AccountFragment accountFragment = new AccountFragment();
-    private static Fragment[] fragments = new Fragment[]{newsFragment, mallFragment, deviceFragment, socialFragment, accountFragment};
+    private static Fragment[] fragments = new Fragment[]{newsFragment, mallFragment, deviceScanFragment, socialFragment, accountFragment};
 
     public static final int INITPOS = POS_DEVICE;
     public int curPos = -1;
@@ -89,8 +86,8 @@ public class MainActivity extends BasicActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            if (requestCode == DeviceFragment.REQUEST_BT_OPEN) {
-                deviceFragment.startScan();
+            if (requestCode == DeviceScanFragment.REQUEST_BT_OPEN) {
+                deviceScanFragment.startScan();
             }
         } else if (resultCode == RESULT_CANCELED) {
             ActivityCollector.finishAll();

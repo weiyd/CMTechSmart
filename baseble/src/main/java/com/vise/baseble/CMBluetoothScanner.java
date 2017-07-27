@@ -28,9 +28,7 @@ public class CMBluetoothScanner {
     private BluetoothAdapter bluetoothAdapter;//蓝牙适配器
     private State state = State.DISCONNECT;//设备状态描述
     private int scanTimeout = DEFAULT_SCAN_TIME;//扫描超时时间
-    private boolean isFound = false;//是否发现设备
-
-    private static CMBluetoothScanner scanner;
+    private static CMBluetoothScanner scanner;//单实例
 
     public static CMBluetoothScanner getInstance() {
         if (scanner == null) {

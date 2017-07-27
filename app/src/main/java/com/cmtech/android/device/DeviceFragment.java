@@ -77,7 +77,7 @@ public class DeviceFragment extends Fragment {
             ViseLog.i("Founded Scan Device:" + bluetoothLeDevice);
 
             ScanDeviceInfo deviceInfo = new ScanDeviceInfo(bluetoothLeDevice.getName(),
-                    "", bluetoothLeDevice.getAddress(), bluetoothLeDevice.getRssi());
+                    bluetoothLeDevice.getDevice().getUuids() , bluetoothLeDevice.getAddress(), bluetoothLeDevice.getRssi());
 
             adapter.addOneDeviceInfo(deviceInfo);
         }

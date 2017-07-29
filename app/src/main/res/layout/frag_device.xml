@@ -18,5 +18,11 @@
             android:layout_weight="1"/>
     </LinearLayout>
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_deviceservice"
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+    </android.support.v7.widget.RecyclerView>
+
 
 </LinearLayout>

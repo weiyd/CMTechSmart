@@ -51,26 +51,25 @@ public class DeviceActivity extends BasicActivity {
         initTab();
     }
 
-    private void initTab(){
-        mTabTl.setTabMode(TabLayout.MODE_SCROLLABLE);
-        mTabTl.setTabTextColors(Color.GRAY, Color.WHITE);
-        mTabTl.setSelectedTabIndicatorColor(Color.WHITE);
-        ViewCompat.setElevation(mTabTl, 10);
-        mTabTl.setupWithViewPager(mContentVp);
-    }
-
     private void initContent(){
         tabIndicators = new ArrayList<>();
-
         tabFragments = new ArrayList<>();
         for(ScanDeviceInfo deviceInfo : deviceList) {
-            String tabName = ("".equals(deviceInfo.getNickName()) ? deviceInfo.getName() : deviceInfo.getNickName());
+            String tabName = ("".equals(deviceInfo.getNickName()) ? deviceInfo.getDevice().getName() : deviceInfo.getNickName());
             tabIndicators.add(tabName);
             tabFragments.add(DeviceFragment.newInstance(deviceInfo));
         }
 
         contentAdapter = new ContentPagerAdapter(getSupportFragmentManager());
         mContentVp.setAdapter(contentAdapter);
+    }
+
+    private void initTab(){
+        mTabTl.setTabMode(TabLayout.MODE_SCROLLABLE);
+        mTabTl.setTabTextColors(Color.GRAY, Color.WHITE);
+        mTabTl.setSelectedTabIndicatorColor(Color.WHITE);
+        ViewCompat.setElevation(mTabTl, 10);
+        mTabTl.setupWithViewPager(mContentVp);
     }
 
     class ContentPagerAdapter extends FragmentPagerAdapter {

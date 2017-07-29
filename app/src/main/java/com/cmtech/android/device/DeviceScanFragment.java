@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -53,11 +54,8 @@ public class DeviceScanFragment extends Fragment {
         public void onDeviceFound(BluetoothLeDevice bluetoothLeDevice) {
             ViseLog.i("Founded Scan Device:" + bluetoothLeDevice);
 
-            ScanDeviceInfo deviceInfo = new ScanDeviceInfo(bluetoothLeDevice.getName(),
-                    "",
-                    bluetoothLeDevice.getAddress(),
-                    bluetoothLeDevice.getRssi());
-
+            ScanDeviceInfo deviceInfo = new ScanDeviceInfo();
+            deviceInfo.setDevice(bluetoothLeDevice);
             adapter.addOneDeviceInfo(deviceInfo);
         }
     };
@@ -86,7 +84,7 @@ public class DeviceScanFragment extends Fragment {
         ViseLog.getLogConfig().configAllowLog(true);//配置日志信息
         ViseLog.plant(new LogcatTree());//添加Logcat打印信息
         //蓝牙信息初始化，全局唯一，必须在应用初始化时调用
-        CMBluetoothScanner.getInstance().init(activity);//.getApplicationContext());
+        CMBluetoothScanner.getInstance().init(activity);
 
         Button btnScan = (Button) activity.findViewById(R.id.btnscan);
         Button btnConnect = (Button) activity.findViewById(R.id.btnconnect);

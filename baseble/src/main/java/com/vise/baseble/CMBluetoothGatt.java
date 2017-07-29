@@ -808,6 +808,7 @@ public class CMBluetoothGatt {
 
     /**
      * 设置特征值监听，用来设置获取设备返回数据的监听
+     * 我做了一些修改
      * @param gatt GATT
      * @param characteristic 特征值
      * @param enable 是否可通知
@@ -819,18 +820,21 @@ public class CMBluetoothGatt {
         if (gatt != null && characteristic != null) {
             ViseLog.i("Characteristic set notification value: " + enable);
             boolean success = gatt.setCharacteristicNotification(characteristic, enable);
-            if (enable) {
-                BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(BleConstant
-                        .CLIENT_CHARACTERISTIC_CONFIG));
-                if (descriptor != null) {
+            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(BleConstant
+                    .CLIENT_CHARACTERISTIC_CONFIG));
+            if (descriptor != null) {
+                if(enable) {
                     if (isIndication) {
                         descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
                     } else {
                         descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     }
-                    gatt.writeDescriptor(descriptor);
-                    ViseLog.i("Characteristic set notification is Success!");
                 }
+                else {
+                    descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+                }
+                gatt.writeDescriptor(descriptor);
+                ViseLog.i("Characteristic set notification is Success!");
             }
             return success;
         }

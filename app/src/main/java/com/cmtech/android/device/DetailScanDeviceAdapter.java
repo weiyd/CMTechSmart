@@ -65,9 +65,9 @@ public class DetailScanDeviceAdapter extends RecyclerView.Adapter<DetailScanDevi
         ScanDeviceInfo item = listItem.get(position);
         holder.ivImage.setImageResource(item.getImageId());
         String nickName = item.getNickName();
-        holder.tvName.setText( ("".equals(nickName)) ? item.getName() : nickName );
-        holder.tvAddress.setText(item.getAddress());
-        holder.tvRssi.setText(""+item.getRssi());
+        holder.tvName.setText( ("".equals(nickName)) ? item.getDevice().getName() : nickName );
+        holder.tvAddress.setText(item.getDevice().getAddress());
+        holder.tvRssi.setText(""+item.getDevice().getRssi());
         holder.cbAutoConnect.setChecked(item.getIsConnect());
     }
 
@@ -88,13 +88,14 @@ public class DetailScanDeviceAdapter extends RecyclerView.Adapter<DetailScanDevi
     }
 
     public void addOneDeviceInfo(ScanDeviceInfo info) {
-        int pos = searchDeviceUsingAddress(info.getAddress());
+        int pos = searchDeviceUsingAddress(info.getDevice().getAddress());
 
         if(pos == -1) {
             listItem.add(info);
             notifyDataSetChanged();
         } else {
-            changeItemRssi(pos, info.getRssi());
+            listItem.get(pos).getDevice().updateRssiReading(info.getDevice().getTimestamp(),
+                    info.getDevice().getRssi());
             notifyItemChanged(pos);
         }
     }
@@ -102,15 +103,17 @@ public class DetailScanDeviceAdapter extends RecyclerView.Adapter<DetailScanDevi
     private int searchDeviceUsingAddress(String address) {
         for(int i = 0; i < listItem.size(); i++)
         {
-            if(listItem.get(i).getAddress().equals(address))
+            if(listItem.get(i).getDevice().getAddress().equals(address))
                 return i;
         }
         return -1;
     }
 
+    /*
     public void changeItemRssi(int pos, int rssi) {
-        listItem.get(pos).setRssi(rssi);
+        listItem.get(pos).getDevice().setRssi(rssi);
     }
+    */
 
     public List<ScanDeviceInfo> getNeedConnectDevice() {
         List<ScanDeviceInfo> needConnect = new ArrayList<>();

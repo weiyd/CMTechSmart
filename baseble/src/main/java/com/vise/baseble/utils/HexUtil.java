@@ -17,6 +17,28 @@ public class HexUtil {
     private static final char[] DIGITS_UPPER = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     /**
+     * 判断字符串是否代表合法十六进制数据
+     * @param str String
+     * @return
+     */
+    public static boolean isHexData(String str) {
+        if (str == null) {
+            return false;
+        }
+        char[] chars = str.toCharArray();
+        if ((chars.length & 1) != 0) {//个数为奇数，直接返回false
+            return false;
+        }
+        for (char ch : chars) {
+            if (ch >= '0' && ch <= '9') continue;
+            if (ch >= 'A' && ch <= 'F') continue;
+            if (ch >= 'a' && ch <= 'f') continue;
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * 将字节数组转换为十六进制字符数组
      *
      * @param data byte[]

@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="5dp">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,11 +19,58 @@
             android:layout_weight="1"/>
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="服务列表"
+        android:textColor="#f00"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_deviceservice"
         android:layout_width="match_parent"
-        android:layout_height="100dp">
+        android:layout_height="wrap_content"
+        android:background="#999">
     </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="特征值列表"
+        android:textColor="#f00"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_servicechar"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#999">
+    </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="写入十六进制数据（两个字符代表一个byte）"
+        android:gravity="center_horizontal"
+        android:textColor="#f00"/>
+
+    <EditText
+        android:id="@+id/et_inputdata"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="操作信息"
+        android:gravity="center_horizontal"
+        android:textColor="#f00"/>
+
+    <TextView
+        android:id="@+id/tv_datainfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"/>
 
 
 </LinearLayout>

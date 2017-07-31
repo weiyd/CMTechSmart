@@ -751,8 +751,8 @@ public class CMBluetoothGatt {
      * @param isIndication 是否是指示器方式，指示器方式比普通通知方式更可靠，底层有应答处理
      * @return 返回设置监听是否成功
      */
-    public boolean enableCharacteristicNotification(ICharacteristicCallback bleCallback, boolean isIndication) {
-        return enableCharacteristicNotification(getCharacteristic(), bleCallback, isIndication);
+    public boolean enableCharacteristicNotification(ICharacteristicCallback bleCallback, boolean enable, boolean isIndication) {
+        return enableCharacteristicNotification(getCharacteristic(), bleCallback, enable, isIndication);
     }
 
     /**
@@ -763,10 +763,10 @@ public class CMBluetoothGatt {
      * @return 返回设置监听是否成功
      */
     public boolean enableCharacteristicNotification(BluetoothGattCharacteristic characteristic, final ICharacteristicCallback
-            bleCallback, boolean isIndication) {
+            bleCallback, boolean enable, boolean isIndication) {
         if (characteristic != null && (characteristic.getProperties() | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
             receiveCallback = bleCallback;
-            return setCharacteristicNotification(getBluetoothGatt(), characteristic, true, isIndication);
+            return setCharacteristicNotification(getBluetoothGatt(), characteristic, enable, isIndication);
         } else {
             if (bleCallback != null) {
                 runOnMainThread(new Runnable() {

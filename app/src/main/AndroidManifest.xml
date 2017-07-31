@@ -35,7 +35,8 @@
 
         <activity
             android:name="com.cmtech.android.device.DeviceActivity"
-            android:label="已连接设备"></activity>
+            android:label="已连接设备"
+            android:windowSoftInputMode="adjustPan"></activity>
 
         <activity android:name="com.cmtech.android.mall.ProductActivity"
             android:label = "商品"></activity>

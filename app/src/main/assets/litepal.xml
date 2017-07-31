@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
-    <dbname value = "SmartDeviceDB"> </dbname>
-    <version value = "4"> </version>
+    <dbname value = "CMTechSmartDB"> </dbname>
+    <version value = "1"> </version>
 
     <list>
         <mapping class="com.cmtech.android.mall.ProductInfo"> </mapping>

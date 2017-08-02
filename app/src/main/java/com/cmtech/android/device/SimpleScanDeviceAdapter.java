@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.cmtech.android.fragmenttest.R;
+import com.cmtech.android.center.R;
 
 import java.util.List;
 

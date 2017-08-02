@@ -1,4 +1,4 @@
-package com.cmtech.android.globalcommon;
+package com.cmtech.android.common;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

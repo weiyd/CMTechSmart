@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -18,8 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.cmtech.android.fragmenttest.R;
-import com.cmtech.android.globalcommon.ActivityCollector;
+import com.cmtech.android.center.R;
+import com.cmtech.android.common.ActivityCollector;
 import com.vise.baseble.CMBluetoothScanner;
 import com.vise.baseble.callback.scan.PeriodScanCallback;
 import com.vise.baseble.model.BluetoothLeDevice;

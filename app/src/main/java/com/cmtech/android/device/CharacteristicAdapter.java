@@ -8,8 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.cmtech.android.fragmenttest.R;
-import com.vise.baseble.CMBluetoothGatt;
+import com.cmtech.android.center.R;
 import com.vise.baseble.model.resolver.GattAttributeResolver;
 
 import java.util.List;

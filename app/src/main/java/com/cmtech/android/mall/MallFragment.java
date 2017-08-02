@@ -2,20 +2,17 @@ package com.cmtech.android.mall;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.cmtech.android.fragmenttest.R;
-import com.cmtech.android.globalcommon.MyApplication;
+import com.cmtech.android.center.R;
+import com.cmtech.android.common.MyApplication;
 
 import org.litepal.crud.DataSupport;
 

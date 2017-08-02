@@ -1,9 +1,9 @@
-package com.cmtech.android.fragmenttest;
+package com.cmtech.android.center;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.cmtech.android.globalcommon.BasicActivity;
+import com.cmtech.android.common.BasicActivity;
 
 /**
  * Created by gdmc on 2017/7/12.

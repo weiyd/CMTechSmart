@@ -7,15 +7,12 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
 
-import com.cmtech.android.fragmenttest.R;
-import com.cmtech.android.globalcommon.BasicActivity;
+import com.cmtech.android.center.R;
+import com.cmtech.android.common.BasicActivity;
 
 import java.io.Serializable;
 import java.util.ArrayList;

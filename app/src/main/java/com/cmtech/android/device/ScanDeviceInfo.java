@@ -3,7 +3,7 @@ package com.cmtech.android.device;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.cmtech.android.fragmenttest.R;
+import com.cmtech.android.center.R;
 import com.vise.baseble.model.BluetoothLeDevice;
 
 /**

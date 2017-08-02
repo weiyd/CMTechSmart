@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
     <dbname value = "CMTechSmartDB"> </dbname>
-    <version value = "1"> </version>
+    <version value = "2"> </version>
 
     <list>
         <mapping class="com.cmtech.android.mall.ProductInfo"> </mapping>
         <mapping class="com.cmtech.android.news.NewsInfo"> </mapping>
+        <mapping class="com.cmtech.android.account.AccountInfo"></mapping>
 
     </list>
 </litepal>

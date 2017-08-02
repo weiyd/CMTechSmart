@@ -1,4 +1,4 @@
-package com.cmtech.android.fragmenttest;
+package com.cmtech.android.center;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -8,12 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.cmtech.android.globalcommon.MyApplication;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by gdmc on 2017/7/10.

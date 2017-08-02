@@ -1,4 +1,4 @@
-package com.cmtech.android.fragmenttest;
+package com.cmtech.android.social;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.cmtech.android.center.R;
 
 /**
  * Created by gdmc on 2017/7/10.

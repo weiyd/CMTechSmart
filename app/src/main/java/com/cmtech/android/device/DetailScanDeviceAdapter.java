@@ -8,7 +8,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cmtech.android.fragmenttest.R;
+import com.cmtech.android.center.R;
 
 import java.util.ArrayList;
 import java.util.List;

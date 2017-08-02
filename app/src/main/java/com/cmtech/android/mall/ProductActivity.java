@@ -7,12 +7,7 @@ import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.cmtech.android.device.DeviceActivity;
-import com.cmtech.android.device.ScanDeviceInfo;
-import com.cmtech.android.fragmenttest.R;
-
-import java.io.Serializable;
-import java.util.List;
+import com.cmtech.android.center.R;
 
 public class ProductActivity extends AppCompatActivity {
     public static void actionStart(Context context, String url) {

@@ -1,4 +1,4 @@
-package com.cmtech.android.fragmenttest;
+package com.cmtech.android.center;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -12,11 +12,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.cmtech.android.fragmenttest.R;
+import com.cmtech.android.center.R;
 import com.vise.baseble.CMBluetoothGatt;
 import com.vise.baseble.callback.IConnectCallback;
 import com.vise.baseble.callback.data.ICharacteristicCallback;

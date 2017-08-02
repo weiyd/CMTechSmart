@@ -1,4 +1,4 @@
-package com.cmtech.android.fragmenttest;
+package com.cmtech.android.center;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,11 +10,13 @@ import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.cmtech.android.account.AccountFragment;
 import com.cmtech.android.device.DeviceScanFragment;
-import com.cmtech.android.globalcommon.ActivityCollector;
-import com.cmtech.android.globalcommon.BasicActivity;
+import com.cmtech.android.common.ActivityCollector;
+import com.cmtech.android.common.BasicActivity;
 import com.cmtech.android.mall.MallFragment;
 import com.cmtech.android.news.NewsFragment;
+import com.cmtech.android.social.SocialFragment;
 
 import org.litepal.tablemanager.Connector;
 
@@ -64,7 +66,7 @@ public class MainActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Connector.getDatabase();
+        //Connector.getDatabase();
 
         changeFragment(INITPOS);
     }
@@ -129,6 +131,7 @@ public class MainActivity extends BasicActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 ActivityCollector.finishAll();
+                System.exit(0);
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {

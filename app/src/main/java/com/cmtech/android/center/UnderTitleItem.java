@@ -1,4 +1,4 @@
-package com.cmtech.android.fragmenttest;
+package com.cmtech.android.center;
 
 /**
  * Created by gdmc on 2017/7/11.

@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/undertitle_frag"
-        android:name="com.cmtech.android.fragmenttest.UnderTitleFragment"
+        android:name="com.cmtech.android.center.UnderTitleFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

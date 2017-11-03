@@ -61,10 +61,18 @@ public class DeviceFragment extends Fragment {
         public void onSuccess(BluetoothGattCharacteristic characteristic) {
             if(characteristic == null)
                 return;
-            String uuid = "读UUID:"+characteristic.getUuid().toString().substring(4,8);
-            String valueHex = HexUtil.encodeHexStr(characteristic.getValue());
+            String uuid = characteristic.getUuid().toString().substring(4,8);
+            String valueHex = "";
+            if(uuid.equalsIgnoreCase("AA21")) {//身高测量值
+                byte[] val = characteristic.getValue();
+                int height = val[1];
+                height = (height<<8) + (val[0] & 0xff);
+                valueHex = Integer.toString(height);
+            } else {
+                valueHex = HexUtil.encodeHexStr(characteristic.getValue());
+            }
             String valueStr = new String(characteristic.getValue());
-            updateDataView(uuid + '\n'
+            updateDataView("读UUID:" + uuid + '\n'
                     + "As Array:" + valueHex + '\n'
                     + "As String:" + valueStr);
         }
@@ -85,12 +93,15 @@ public class DeviceFragment extends Fragment {
         public void onSuccess(BluetoothGattCharacteristic characteristic) {
             if(characteristic == null)
                 return;
-            String uuid = "写UUID:"+characteristic.getUuid().toString().substring(4,8);
-            String valueHex = HexUtil.encodeHexStr(characteristic.getValue());
-            String valueStr = new String(characteristic.getValue());
-            updateDataView(uuid + '\n'
-                    + "As Array:" + valueHex + '\n'
-                    + "As String:" + valueStr);
+            String uuid = characteristic.getUuid().toString().substring(4,8);
+            if(!uuid.equalsIgnoreCase("AA22"))
+            {
+                String valueHex = HexUtil.encodeHexStr(characteristic.getValue());
+                String valueStr = new String(characteristic.getValue());
+                updateDataView("写UUID:" + uuid + '\n'
+                        + "As Array:" + valueHex + '\n'
+                        + "As String:" + valueStr);
+            }
         }
 
         @Override
@@ -109,10 +120,19 @@ public class DeviceFragment extends Fragment {
         public void onSuccess(BluetoothGattCharacteristic characteristic) {
             if(characteristic == null)
                 return;
-            String uuid = "Noti/Indi UUID:"+characteristic.getUuid().toString().substring(4,8);
-            String valueHex = HexUtil.encodeHexStr(characteristic.getValue());
+            String uuid = characteristic.getUuid().toString().substring(4,8);
+            String valueHex = "";
+            if(uuid.equalsIgnoreCase("AA31") || uuid.equalsIgnoreCase("AA21")) {//体温测量值或身高值
+                byte[] val = characteristic.getValue();
+                int height = val[1];
+                height = (height<<8) + (val[0] & 0xff);
+                valueHex = Integer.toString(height);
+            } else {
+                valueHex = HexUtil.encodeHexStr(characteristic.getValue());
+            }
+            //String valueHex = HexUtil.encodeHexStr(characteristic.getValue());
             String valueStr = new String(characteristic.getValue());
-            updateDataView(uuid + '\n' + valueHex + '\n' + valueStr);
+            updateDataView("Noti/Indi UUID:"+ uuid + '\n' + valueHex + '\n' + valueStr);
         }
 
         @Override

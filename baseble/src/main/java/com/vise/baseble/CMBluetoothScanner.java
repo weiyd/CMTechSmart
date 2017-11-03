@@ -29,10 +29,11 @@ public class CMBluetoothScanner {
     private State state = State.DISCONNECT;//设备状态描述
     private int scanTimeout = DEFAULT_SCAN_TIME;//扫描超时时间
     private static CMBluetoothScanner scanner;//单实例
+    private static Object classLock = CMBluetoothScanner.class;//类锁
 
     public static CMBluetoothScanner getInstance() {
         if (scanner == null) {
-            synchronized (CMBluetoothScanner.class) {
+            synchronized (classLock) {
                 if (scanner == null) {
                     scanner = new CMBluetoothScanner();
                 }
@@ -54,26 +55,6 @@ public class CMBluetoothScanner {
 
     /*==================Android API 18 Scan========================*/
 
-    /**
-     * 开始扫描
-     * @param leScanCallback 回调
-     */
-    public void startLeScan(BluetoothAdapter.LeScanCallback leScanCallback) {
-        if (bluetoothAdapter != null) {
-            bluetoothAdapter.startLeScan(leScanCallback);
-            state = State.SCAN_PROCESS;
-        }
-    }
-
-    /**
-     * 停止扫描
-     * @param leScanCallback 回调
-     */
-    public void stopLeScan(BluetoothAdapter.LeScanCallback leScanCallback) {
-        if (bluetoothAdapter != null) {
-            bluetoothAdapter.stopLeScan(leScanCallback);
-        }
-    }
 
     /**
      * 开始扫描
@@ -95,6 +76,27 @@ public class CMBluetoothScanner {
             throw new IllegalArgumentException("this PeriodScanCallback is Null!");
         }
         periodScanCallback.setScanner(this).setScan(false).removeHandlerMsg().scan();
+    }
+
+    /**
+     * 开始扫描
+     * @param leScanCallback 回调
+     */
+    public void startLeScan(BluetoothAdapter.LeScanCallback leScanCallback) {
+        if (bluetoothAdapter != null) {
+            bluetoothAdapter.startLeScan(leScanCallback);
+            state = State.SCAN_PROCESS;
+        }
+    }
+
+    /**
+     * 停止扫描
+     * @param leScanCallback 回调
+     */
+    public void stopLeScan(BluetoothAdapter.LeScanCallback leScanCallback) {
+        if (bluetoothAdapter != null) {
+            bluetoothAdapter.stopLeScan(leScanCallback);
+        }
     }
 
     /*==================Android API 21 Scan========================*/
